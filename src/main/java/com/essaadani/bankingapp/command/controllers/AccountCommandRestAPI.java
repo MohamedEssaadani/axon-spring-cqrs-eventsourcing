@@ -5,9 +5,9 @@ import com.essaadani.bankingapp.coreapi.commands.CreateAccountCommand;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.axonframework.commandhandling.gateway.CommandGateway;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -20,7 +20,7 @@ public class AccountCommandRestAPI {
     private final CommandGateway commandGateway;
 
     @PostMapping("/create")
-    public CompletableFuture<String> newAccount(CreateAccountRequestDTO request){
+    public CompletableFuture<String> newAccount(@RequestBody CreateAccountRequestDTO request){
         log.info("request: {}", request.getInitialBalance().toString());
 
         CompletableFuture<String> response = commandGateway.send(new CreateAccountCommand(
@@ -30,5 +30,10 @@ public class AccountCommandRestAPI {
         ));
 
         return response;
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<String> exceptionHandler(Exception e){
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

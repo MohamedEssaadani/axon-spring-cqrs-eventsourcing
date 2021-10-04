@@ -6,7 +6,9 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
-@Data @AllArgsConstructor @NoArgsConstructor
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class CreateAccountRequestDTO {
     private BigDecimal initialBalance;
     private String currency;
