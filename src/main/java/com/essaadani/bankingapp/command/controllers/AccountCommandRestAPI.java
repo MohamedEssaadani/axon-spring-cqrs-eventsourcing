@@ -42,6 +42,6 @@ public class AccountCommandRestAPI {
 
     @GetMapping("/events/{accountId}")
     public Stream accountEvents(@PathVariable String accountId){
-        return eventStore.readEvents(accountId).asStream();g
+        return eventStore.readEvents(accountId).asStream();
     }
 }
