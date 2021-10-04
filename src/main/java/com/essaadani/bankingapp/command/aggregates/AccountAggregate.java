@@ -1,8 +1,13 @@
 package com.essaadani.bankingapp.command.aggregates;
 
+import com.essaadani.bankingapp.command.exceptions.BalanceNotSufficientException;
 import com.essaadani.bankingapp.coreapi.commands.CreateAccountCommand;
+import com.essaadani.bankingapp.coreapi.commands.CreditAccountCommand;
+import com.essaadani.bankingapp.coreapi.commands.DebitAccountCommand;
 import com.essaadani.bankingapp.coreapi.events.AccountActivatedEvent;
 import com.essaadani.bankingapp.coreapi.events.AccountCreatedEvent;
+import com.essaadani.bankingapp.coreapi.events.AccountCreditedEvent;
+import com.essaadani.bankingapp.coreapi.events.AccountDebitedEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.eventsourcing.EventSourcingHandler;
@@ -65,4 +70,47 @@ public class AccountAggregate {
         this.status = event.getStatus();
     }
 
+    @CommandHandler
+    public void handle(CreditAccountCommand command) {
+        log.info("CreditAccountCommand received!");
+        // Business Logic
+
+        //Dispatch an event
+        AggregateLifecycle.apply(new AccountCreditedEvent(
+                command.getId(),
+                command.getAmount(),
+                command.getCurrency()
+        ));
+    }
+
+    //Account credited event handler
+    @EventSourcingHandler
+    public void on(AccountCreditedEvent event){
+        log.info("AccountCreditedEvent occured!");
+        this.balance = this.balance.add(event.getAmount());
+    }
+
+    @CommandHandler
+    public void handle(DebitAccountCommand command) {
+        log.info("DebitAccountCommand received!");
+        // Business Logic
+
+        if(this.balance.subtract(command.getAmount()).doubleValue()<0){
+            throw new BalanceNotSufficientException("Balance Not Sufficient Exception");
+        }
+
+        //Dispatch an event
+        AggregateLifecycle.apply(new AccountDebitedEvent(
+                command.getId(),
+                command.getAmount(),
+                command.getCurrency()
+        ));
+    }
+
+    //Account debited event handler
+    @EventSourcingHandler
+    public void on(AccountDebitedEvent event){
+        log.info("AccountCreditedEvent occured!");
+        this.balance = this.balance.subtract(event.getAmount());
+    }
 }

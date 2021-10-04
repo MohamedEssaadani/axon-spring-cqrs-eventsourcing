@@ -1,7 +1,11 @@
 package com.essaadani.bankingapp.command.controllers;
 
 import com.essaadani.bankingapp.command.dto.CreateAccountRequestDTO;
+import com.essaadani.bankingapp.command.dto.CreditAccountRequestDTO;
+import com.essaadani.bankingapp.command.dto.DebitAccountRequestDTO;
 import com.essaadani.bankingapp.coreapi.commands.CreateAccountCommand;
+import com.essaadani.bankingapp.coreapi.commands.CreditAccountCommand;
+import com.essaadani.bankingapp.coreapi.commands.DebitAccountCommand;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.axonframework.commandhandling.gateway.CommandGateway;
@@ -29,6 +33,33 @@ public class AccountCommandRestAPI {
         CompletableFuture<String> response = commandGateway.send(new CreateAccountCommand(
                 UUID.randomUUID().toString(),
                 request.getInitialBalance(),
+                request.getCurrency()
+        ));
+
+        return response;
+    }
+
+
+    @PutMapping("/credit")
+    public CompletableFuture<String> credit(@RequestBody CreditAccountRequestDTO request){
+        log.info("request: {}", request.getAccountId());
+
+        CompletableFuture<String> response = commandGateway.send(new CreditAccountCommand(
+                request.getAccountId(),
+                request.getAmount(),
+                request.getCurrency()
+        ));
+
+        return response;
+    }
+
+    @PutMapping("/debit")
+    public CompletableFuture<String> debit(@RequestBody DebitAccountRequestDTO request){
+        log.info("request: {}", request.getAccountId());
+
+        CompletableFuture<String> response = commandGateway.send(new DebitAccountCommand(
+                request.getAccountId(),
+                request.getAmount(),
                 request.getCurrency()
         ));
 

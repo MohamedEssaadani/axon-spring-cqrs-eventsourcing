@@ -1,11 +1,11 @@
 package com.essaadani.bankingapp.coreapi.events;
 
-import com.essaadani.bankingapp.coreapi.commands.BaseCommand;
 import lombok.Getter;
 
 import java.math.BigDecimal;
 
-public class AccountCreditedEvent extends BaseCommand<String> {
+public class AccountCreditedEvent extends BaseEvent<String>{
+
     @Getter private BigDecimal amount;
     @Getter private String currency;
 
@@ -16,3 +16,5 @@ public class AccountCreditedEvent extends BaseCommand<String> {
         this.currency = currency;
     }
 }
+
+
