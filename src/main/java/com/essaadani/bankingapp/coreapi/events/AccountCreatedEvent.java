@@ -8,7 +8,8 @@ public class AccountCreatedEvent extends BaseEvent<String>{
     @Getter private BigDecimal initialBalance;
     @Getter private String currency;
 
-    public AccountCreatedEvent(BigDecimal initialBalance, String currency) {
+    public AccountCreatedEvent(String id, BigDecimal initialBalance, String currency) {
+        super(id);
         this.initialBalance = initialBalance;
         this.currency = currency;
     }
