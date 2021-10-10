@@ -12,6 +12,7 @@ import com.essaadani.bankingapp.query.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.axonframework.eventhandling.EventHandler;
+import org.axonframework.eventhandling.ResetHandler;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +24,13 @@ import java.util.Date;
 public class EventHandlerService {
     private final AccountRepository accountRepository;
     private final AccountOperationRepository accountOperationRepository;
+
+    @ResetHandler
+    public void resetDatabase(){
+        log.info("Reset Database...");
+        accountRepository.deleteAll();
+        accountOperationRepository.deleteAll();
+    }
 
     @EventHandler
     public void on(AccountCreatedEvent event){
@@ -68,7 +76,7 @@ public class EventHandlerService {
         AccountOperation accountOperation = new AccountOperation();
         accountOperation.setOperationDate(new Date());
         accountOperation.setAmount(event.getAmount());
-        accountOperation.setType(OperationType.CREDIT);
+        accountOperation.setType(OperationType.DEBIT);
         accountOperation.setAccount(account);
         accountOperationRepository.save(accountOperation);
 

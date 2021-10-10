@@ -7,10 +7,10 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class ReplayEventsHandler {
+public class ReplayEventsService {
     private final EventProcessingConfiguration eventProcessingConfiguration;
 
-    public void repaly(){
+    public void replay(){
         String name = "com.essaadani.bankingapp.query.service";
 
         eventProcessingConfiguration.eventProcessor(name, TrackingEventProcessor.class)
