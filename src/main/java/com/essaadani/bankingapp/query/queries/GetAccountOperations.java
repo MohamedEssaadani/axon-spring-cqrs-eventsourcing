@@ -7,6 +7,6 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class GetAccountByIdQuery {
+public class GetAccountOperations {
     private String accountId;
 }
