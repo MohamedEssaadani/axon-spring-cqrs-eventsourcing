@@ -1,6 +1,7 @@
 package com.essaadani.bankingapp.query.service;
 
 import com.essaadani.bankingapp.coreapi.enums.AccountStatus;
+import com.essaadani.bankingapp.coreapi.events.AccountActivatedEvent;
 import com.essaadani.bankingapp.coreapi.events.AccountCreatedEvent;
 import com.essaadani.bankingapp.coreapi.events.AccountCreditedEvent;
 import com.essaadani.bankingapp.coreapi.events.AccountDebitedEvent;
@@ -44,6 +45,17 @@ public class EventHandlerService {
         account.setStatus(AccountStatus.CREATED);
 
         accountRepository.save(account);
+    }
+
+    @EventHandler
+    @Transactional
+    public void on(AccountActivatedEvent event){
+        log.info("******************QUERY SIDE******************");
+        log.info("AccountActivatedEvent occured");
+
+        Account account = accountRepository.findById(event.getId()).get();
+        account.setStatus(AccountStatus.ACTIVATED);
+
     }
 
     @EventHandler
