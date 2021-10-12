@@ -109,6 +109,16 @@ public class EventHandlerService {
         accountOperationRepository.save(accountOperation);
 
         account.setBalance(account.getBalance().subtract(event.getAmount()));
-        accountRepository.save(account);
-    }
+
+        Account savedAccount = accountRepository.save(account);
+
+        AccountDTO accountDTO = mapper.fromAccount(savedAccount);
+
+        emitter.emit(
+                m -> ((GetAccountByIdQuery)m
+                        .getPayload())
+                        .getAccountId()
+                        .equals(event.getId()),
+                accountDTO
+        );    }
 }
