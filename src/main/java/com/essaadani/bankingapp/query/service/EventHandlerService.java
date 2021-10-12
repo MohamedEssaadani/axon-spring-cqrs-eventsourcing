@@ -5,15 +5,19 @@ import com.essaadani.bankingapp.coreapi.events.AccountActivatedEvent;
 import com.essaadani.bankingapp.coreapi.events.AccountCreatedEvent;
 import com.essaadani.bankingapp.coreapi.events.AccountCreditedEvent;
 import com.essaadani.bankingapp.coreapi.events.AccountDebitedEvent;
+import com.essaadani.bankingapp.query.dto.AccountDTO;
 import com.essaadani.bankingapp.query.entities.Account;
 import com.essaadani.bankingapp.query.entities.AccountOperation;
 import com.essaadani.bankingapp.query.enums.OperationType;
+import com.essaadani.bankingapp.query.mappers.AccountMapper;
+import com.essaadani.bankingapp.query.queries.GetAccountByIdQuery;
 import com.essaadani.bankingapp.query.repository.AccountOperationRepository;
 import com.essaadani.bankingapp.query.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.axonframework.eventhandling.EventHandler;
 import org.axonframework.eventhandling.ResetHandler;
+import org.axonframework.queryhandling.QueryUpdateEmitter;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +29,8 @@ import java.util.Date;
 public class EventHandlerService {
     private final AccountRepository accountRepository;
     private final AccountOperationRepository accountOperationRepository;
+    private final QueryUpdateEmitter emitter;
+    private final AccountMapper mapper;
 
     @ResetHandler
     public void resetDatabase(){
@@ -74,7 +80,17 @@ public class EventHandlerService {
         accountOperationRepository.save(accountOperation);
 
         account.setBalance(account.getBalance().add(event.getAmount()));
-        accountRepository.save(account);
+        Account savedAccount = accountRepository.save(account);
+
+        AccountDTO accountDTO = mapper.fromAccount(savedAccount);
+
+        emitter.emit(
+                m -> ((GetAccountByIdQuery)m
+                        .getPayload())
+                        .getAccountId()
+                        .equals(event.getId()),
+                accountDTO
+        );
     }
 
     @EventHandler
