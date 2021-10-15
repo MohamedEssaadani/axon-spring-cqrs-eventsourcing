@@ -14,6 +14,7 @@ public class BankingAppApplication {
     }
 
     @Bean
+
     CommandBus commandBus(){
         return SimpleCommandBus.builder().build();
     }
